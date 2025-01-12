@@ -368,11 +368,15 @@ def make_index(
             ticker_returns = download_returns(ticker, period)
         else:
             ticker_returns = returns[ticker]
+        
+        #added this to try
+        ticker_returns = _pd.to_numeric(ticker_returns, errors ="coerce")
 
         portfolio[ticker] = ticker_returns
 
     # index members time-series
     index = _pd.DataFrame(portfolio).dropna()
+    index = index.apply(_pd.to_numeric, errors="coerce") #added this as well
 
     if match_dates:
         index = index[max(index.ne(0).idxmax()) :]
@@ -381,13 +385,13 @@ def make_index(
     if rebalance is None:
         for ticker, weight in ticker_weights.items():
             index[ticker] = weight * index[ticker]
-        return index.sum(axis=1)
+        return index.sum(axis=1, numeric_only = True) #added the second bit to it
 
     last_day = index.index[-1]
 
     # rebalance marker
     rbdf = index.resample(rebalance).first()
-    rbdf["break"] = rbdf.index.strftime("%s")
+    rbdf["break"] = _pd.to_numeric(rbdf.index.strftime("%s"), errors = "coerce") #added here as well
 
     # index returns with rebalance markers
     index = _pd.concat([index, rbdf["break"]], axis=1)
@@ -407,7 +411,7 @@ def make_index(
 
     # drop when all are NaN
     index.dropna(how="all", inplace=True)
-    return index[index.index <= last_day].sum(axis=1)
+    return index[index.index <= last_day].sum(axis=1, numeric_only=True) #changed here as well
 
 
 def make_portfolio(returns, start_balance=1e5, mode="comp", round_to=None):
