@@ -390,7 +390,7 @@ def make_index(
     last_day = index.index[-1]
 
     # rebalance marker
-    rbdf = index.resample(rebalance).first()
+    rbdf = index.resample(rebalance.replace('M', 'ME')).first()
     rbdf["break"] = _pd.to_numeric(rbdf.index.strftime("%s"), errors = "coerce") #added here as well
 
     # index returns with rebalance markers
