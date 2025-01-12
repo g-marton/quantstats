@@ -21,7 +21,7 @@
 import matplotlib.pyplot as _plt
 
 try:
-    _plt.rcParams["font.family"] = "Arial"
+    _plt.rcParams["font.family"] = "DejaVu Sans"
 except Exception:
     pass
 
